@@ -19,14 +19,23 @@ class ToDo(db.Model):
 def index():
     if request.method == 'POST':
         task_content = request.form['content']
-        new_task = ToDo(content=task_content)
+        date_str = request.form['date']  # z.B. '2025-07-06'
+                
+        # String -> datetime-Objekt umwandeln
+        try:
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d')
+        except ValueError:
+            return "Ungültiges Datum. Bitte Format 'YYYY-MM-DD' benutzen."
+
+        # Neues Objekt mit Datum 
+        new_task = ToDo(content=task_content, data_created=date_obj)
         
         try:
             db.session.add(new_task)
             db.session.commit()
             return redirect('/')
         except:
-            return "There was an issue adding your task.."
+            return "There was an issue adding the weight.."
         
     else:
         tasks = ToDo.query.order_by(ToDo.data_created).all()
@@ -41,7 +50,7 @@ def delete(id):
         db.session.commit()
         return redirect('/')
     except:
-        return "There was a problem deleting a task.."
+        return "Es liegt ein Problem beim Löschen des Eintrags vor.."
         
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
 def update(id):
@@ -53,7 +62,7 @@ def update(id):
             db.session.commit()
             return redirect('/')
         except:
-            return "There was a problem in updating this task.."
+            return "Ohje - ein Problem beim Updating des Eintrags.."
     else:
         return render_template('update.html', task=task)
 
