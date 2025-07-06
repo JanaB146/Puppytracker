@@ -1,11 +1,21 @@
 body {
     margin: 0;
+    background:linear-gradient(to left, #b2b9e2, #70779a, #575b6d, #50556d, #70779a, #b2b9e2) ;
     font-family: sans-serif;
+}
+h1, td, th, a, h2 {
+    color: white;
+}
+a:link {
+    text-decoration: none;
+}
+a:hover {
+    color:rgb(138, 138, 210);
 }
 h1 {
     text-align: center;
 }
-.content {
+.weight {
     display: flex;
     flex-direction: column;
     text-align: left;
@@ -18,14 +28,27 @@ td, th {
 form {
     margin-top: 30px;
 }
-input {
-    display: flex;
-    flex-direction: column;
-}
 .eingabe {
-    padding: 5px;
+    width:300px;
+    display: flex;
+    justify-content: space-between;
+}
+input.feld {
+    height:30px;
+    width:150px;
+}
+input#feld {
+    height: 40px;
+    padding: 10px;
 }
 .absenden {
-    margin-top: 20px;
-    padding: 10px;
+    display: flex;
+    margin-top: 30px;
+    justify-content: center;
+}
+.chart {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }

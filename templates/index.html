@@ -1,49 +1,118 @@
 {% extends 'base.html' %}
 
-{% block head %} 
-
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <title>Lunas Wachstum</title>
-
 {% endblock %}
-{% block body %} 
 
-<div class="content">
+{% block body %}
+<div class="weight">
     <h1>Lunas Gewicht</h1>
 
-    {% if tasks|length < 1 %}
-    <h4>Kein Gewicht? Sie ist wohl eine Feder..</h4>
-
+    {% if entries|length < 1 %}
+    <h4>Noch kein Gewicht eingetragen..</h4>
     {% else %}
-
     <table>
         <tr>
+            <th>ID</th>
             <th>Gewicht in kg</th>
             <th>Datum</th>
             <th>Aktionen</th>
         </tr>
-        {% for task in tasks %}
+        {% for entry in entries %}
             <tr>
-                <td>{{ task.content }}</td>
+                <td>{{ entry.id }}</td>
+                <td>{{ entry.weight }}</td>
                 <td>
-                    {% if task.data_created %}
-                        {{ task.data_created.date() }}
+                    {% if entry.date_created %}
+                        {{ entry.date_created.date() }}
                     {% else %}
                         kein Datum
                     {% endif %}
                 </td>
                 <td>
-                    <a href="/delete/{{ task.id }}">Eintrag löschen</a>
+                    <a href="/delete/{{ entry.id }}">Eintrag löschen</a>
                     <br>
-                    <a href="/update/{{ task.id }}">Eintrag verändern</a>
+                    <a href="/update/{{ entry.id }}">Eintrag verändern</a>
                 </td>
             </tr>
         {% endfor %}
     </table>
     {% endif %}
     <form action="/" method="POST">
-        <input class="eingabe" type="text" name="content" id="content" required>
-        <input class="eingabe" type="date" name="date" id="date">
-        <input class="absenden" type="submit" value="Gewicht hinzufügen">
+        <div class="eingabe">
+            <input class="feld" type="number" step="0.1" name="weight" required>
+            <input class="feld" type="date" name="date" id="date">
+        </div>
+        <div class="absenden">
+            <input id="feld" type="submit" value="Gewicht hinzufügen">
+        </div>
     </form>
 </div>
+<div class="chart">
+    <h2>Gewichtsentwicklung</h2>
+    <canvas id="weightChart" width="1000" height="500"></canvas>
+    <script>
+        const ctx = document.getElementById('weightChart').getContext('2d');
+        const weightChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ dates | tojson }},  // Monatsbezeichner (z. B. "Monat 0", "Monat 1")
+                datasets: [{
+                    label: 'Gewicht (kg)',
+                    data: {{ weights | tojson }},
+                    borderColor: 'blue',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    tension: 0,
+                    fill: true,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: false,
+                spanGaps: true, // <--- Diese Zeile sorgt für durchgehende Linien
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Datum',
+                            color: 'white'
+                        },
+                        ticks: {
+                            color: 'white'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Gewicht (kg)',
+                            color: 'white'
+                        },
+                        ticks: {
+                            color: 'white'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'white',          // Schriftfarbe
+                            font: {
+                                size: 14,           // Schriftgröße
+                                weight: 'bold',     // Schriftstil
+                                family: 'Arial'     // Schriftart
+                            }
+                        }
+                    },
+                    tooltip: {
+                        bodyColor: 'white',
+                        titleColor: 'white'
+                    }
+                }
+            }
+        });
+    </script>
+</div>
+
 {% endblock %}
